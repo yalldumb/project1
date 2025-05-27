@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Отправка фото в Telegram Mini App</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+  }
+  #photosList img {
+    max-width: 100px;
+    margin: 5px;
+    border-radius: 8px;
+  }
+  button {
+    padding: 10px 15px;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <h1>Загрузите фотографии</h1>
+  <input type="file" id="fileInput" multiple accept="image/*" />
+  <div id="photosList"></div>
+  <button id="sendBtn" disabled>Отправить фото боту</button>
+
+  <script>
+    // Инициализация Telegram Web App
+    const tg = window.Telegram.WebApp;
+
+    const fileInput = document.getElementById('fileInput');
+    const photosList = document.getElementById('photosList');
+    const sendBtn = document.getElementById('sendBtn');
+    let files = [];
+
+    // Отображаем выбранные изображения
+    fileInput.addEventListener('change', () => {
+      photosList.innerHTML = '';
+      files = Array.from(fileInput.files);
+
+      if (files.length > 0) {
+        sendBtn.disabled = false;
+      } else {
+        sendBtn.disabled = true;
+      }
+
+      files.forEach(file => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        photosList.appendChild(img);
+      });
+    });
+
+    // Функция для отправки файлов в бота
+    sendBtn.addEventListener('click', () => {
+      if (!files.length) return;
+
+      // Telegram Web Apps не позволяют напрямую отправлять файлы из JS.
+      // Можно отправить файлы в base64 в виде сообщения (если бот умеет принимать такие данные)
+      // или реализовать загрузку на сервер и отправку ссылки.
+
+      // Здесь отправим имена файлов как пример:
+
+      const fileNames = files.map(f => f.name).join(', ');
+
+      tg.sendData(`Пользователь отправил фото: ${fileNames}`);
+
+      alert('Данные отправлены боту! Закройте это окно.');
+      tg.close();
+    });
+
+    // Инициализируем интерфейс Telegram Mini App
+    tg.ready();
+  </script>
+</body>
+</html>
